@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
                     uniqueness: { case_sensitive: false }
                     
     has_secure_password
-    validates :password, length: { minimum: 6 }
+    validates :password, length: { minimum: 6 }, allow_blank: true
     
     # Returns the hash digest of the given string.
     class << self
@@ -35,7 +35,16 @@ class User < ActiveRecord::Base
         BCrypt::Password.new(remember_digest).is_password?(remember_token)
     end
     
+    def edit
+        @user = User.find(params[:id])
+    end
+    
     def forget
         update_attribute(:remember_digest, nil)
+    end
+    
+    private
+    def user_params
+        params.require(:user).permit(:name, :email, :password, :password_confirmation)
     end
 end
